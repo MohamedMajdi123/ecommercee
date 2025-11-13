@@ -7,12 +7,21 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import getProducts from "@/utils/getProducts";
 
+interface Product {
+  _id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [products, setProducts] = useState([]); // متغير لتخزين المنتجات
+  const [products, setProducts] = useState<Product[]>([]); // متغير لتخزين المنتجات
   const [loading, setLoading] = useState(true); // حالة التحميل
-  const [error, setError] = useState(null); // حالة الخطأ
+  const [error, setError] = useState(""); // حالة الخطأ
 
   // دالة لجلب المنتجات
   const fetchProducts = async () => {
@@ -33,7 +42,7 @@ export default function Home() {
 
   // استخدام useMemo لتصفية المنتجات بناءً على الاستعلام والتصنيف المختار
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return products?.filter((product: Product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -72,9 +81,18 @@ export default function Home() {
             منتجاتنا المميزة
           </h2>
           <Row className="g-4">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product: Product) => (
               <Col key={product._id} xs={12} sm={6} lg={4} xl={3}>
-                <ProductCard product={product} />
+                <ProductCard
+                  product={{
+                    id: product._id,
+                    name: product.name,
+                    category: product.category,
+                    price: product.price,
+                    image: product.image,
+                    description: product.description,
+                  }}
+                />
               </Col>
             ))}
           </Row>
